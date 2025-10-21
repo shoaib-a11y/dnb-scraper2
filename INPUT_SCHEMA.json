@@ -44,11 +44,11 @@
       "type": "object",
       "description": "Configure CSS selectors for fields you want to extract.",
       "properties": {
-        "name": { "type": "string", "description": "Selector for company name." },
-        "address": { "type": "string", "description": "Selector for street address." },
-        "phone": { "type": "string", "description": "Selector for phone number." },
-        "website": { "type": "string", "description": "Selector for the company website link (href)." },
-        "industry": { "type": "string", "description": "Selector for industry/category label." }
+        "name": { "title": "Name selector", "type": "string", "description": "Selector for company name." },
+        "address": { "title": "Address selector", "type": "string", "description": "Selector for street address." },
+        "phone": { "title": "Phone selector", "type": "string", "description": "Selector for phone number." },
+        "website": { "title": "Website selector", "type": "string", "description": "Selector for the company website link (href)." },
+        "industry": { "title": "Industry selector", "type": "string", "description": "Selector for industry/category label." }
       }
     },
     "firebaseEnabled": {
@@ -68,13 +68,13 @@
       "type": "object",
       "description": "Configure a simple form-based login step. Only use if the site permits it.",
       "properties": {
-        "enabled": { "type": "boolean", "description": "Enable the login step before crawling." },
-        "loginUrl": { "type": "string", "description": "URL of the login page." },
-        "username": { "type": "string", "description": "Login username." },
-        "password": { "type": "string", "description": "Login password." },
-        "usernameSelector": { "type": "string", "description": "CSS selector for username/email input." },
-        "passwordSelector": { "type": "string", "description": "CSS selector for password input." },
-        "submitSelector": { "type": "string", "description": "CSS selector for submit button." }
+        "enabled": { "title": "Enable login", "type": "boolean", "description": "Enable the login step before crawling." },
+        "loginUrl": { "title": "Login URL", "type": "string", "description": "URL of the login page." },
+        "username": { "title": "Username", "type": "string", "description": "Login username." },
+        "password": { "title": "Password", "type": "string", "description": "Login password." },
+        "usernameSelector": { "title": "Username selector", "type": "string", "description": "CSS selector for username/email input." },
+        "passwordSelector": { "title": "Password selector", "type": "string", "description": "CSS selector for password input." },
+        "submitSelector": { "title": "Submit selector", "type": "string", "description": "CSS selector for submit button." }
       }
     }
   },
