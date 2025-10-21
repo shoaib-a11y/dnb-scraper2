@@ -37,18 +37,18 @@
       "title": "Proxy groups",
       "type": "array",
       "editor": "stringList",
-      "description": "Optional Apify proxy groups (e.g., SHADER, BUYPROXIES94952)."
+      "description": "Optional Apify proxy groups."
     },
     "selectors": {
       "title": "CSS selectors",
       "type": "object",
       "description": "Configure CSS selectors for fields you want to extract.",
       "properties": {
-        "name": { "type": "string", "default": "h1.company-name", "description": "Selector for company name." },
-        "address": { "type": "string", "default": "p.company-address", "description": "Selector for street address." },
-        "phone": { "type": "string", "default": "a.company-phone", "description": "Selector for phone number." },
-        "website": { "type": "string", "default": "a.company-website", "description": "Selector for the company website link (href)." },
-        "industry": { "type": "string", "default": "span.company-industry", "description": "Selector for industry/category label." }
+        "name": { "type": "string", "description": "Selector for company name." },
+        "address": { "type": "string", "description": "Selector for street address." },
+        "phone": { "type": "string", "description": "Selector for phone number." },
+        "website": { "type": "string", "description": "Selector for the company website link (href)." },
+        "industry": { "type": "string", "description": "Selector for industry/category label." }
       }
     },
     "firebaseEnabled": {
@@ -68,13 +68,13 @@
       "type": "object",
       "description": "Configure a simple form-based login step. Only use if the site permits it.",
       "properties": {
-        "enabled": { "type": "boolean", "default": false, "description": "Enable the login step before crawling." },
+        "enabled": { "type": "boolean", "description": "Enable the login step before crawling." },
         "loginUrl": { "type": "string", "description": "URL of the login page." },
-        "username": { "type": "string", "description": "Login username (use Apify input secret fields for sensitive data)." },
-        "password": { "type": "string", "description": "Login password (use Apify input secret fields for sensitive data)." },
-        "usernameSelector": { "type": "string", "default": "input[name=email]", "description": "CSS selector for username/email input." },
-        "passwordSelector": { "type": "string", "default": "input[type=password]", "description": "CSS selector for password input." },
-        "submitSelector": { "type": "string", "default": "button[type=submit]", "description": "CSS selector for submit button." }
+        "username": { "type": "string", "description": "Login username (use Apify secret inputs for sensitive data)." },
+        "password": { "type": "string", "description": "Login password (use Apify secret inputs for sensitive data)." },
+        "usernameSelector": { "type": "string", "description": "CSS selector for username/email input." },
+        "passwordSelector": { "type": "string", "description": "CSS selector for password input." },
+        "submitSelector": { "type": "string", "description": "CSS selector for submit button." }
       }
     }
   },
