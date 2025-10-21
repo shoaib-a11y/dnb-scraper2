@@ -42,6 +42,7 @@
     "selectors": {
       "title": "CSS selectors",
       "type": "object",
+      "editor": "json",
       "description": "Configure CSS selectors for fields you want to extract.",
       "properties": {
         "name": { "title": "Name selector", "type": "string", "description": "Selector for company name." },
@@ -66,6 +67,7 @@
     "login": {
       "title": "(Optional) Login flow — only use with permission",
       "type": "object",
+      "editor": "json",
       "description": "Configure a simple form-based login step. Only use if the site permits it.",
       "properties": {
         "enabled": { "title": "Enable login", "type": "boolean", "description": "Enable the login step before crawling." },
