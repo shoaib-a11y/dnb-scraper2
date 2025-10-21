@@ -70,8 +70,8 @@
       "properties": {
         "enabled": { "type": "boolean", "description": "Enable the login step before crawling." },
         "loginUrl": { "type": "string", "description": "URL of the login page." },
-        "username": { "type": "string", "description": "Login username (use Apify secret inputs for sensitive data)." },
-        "password": { "type": "string", "description": "Login password (use Apify secret inputs for sensitive data)." },
+        "username": { "type": "string", "description": "Login username." },
+        "password": { "type": "string", "description": "Login password." },
         "usernameSelector": { "type": "string", "description": "CSS selector for username/email input." },
         "passwordSelector": { "type": "string", "description": "CSS selector for password input." },
         "submitSelector": { "type": "string", "description": "CSS selector for submit button." }
