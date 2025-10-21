@@ -1,0 +1,16 @@
+{
+  "name": "dnb-scraper-firebase",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Apify actor that scrapes D&B-like company pages and optionally syncs to Firebase/Firestore.",
+  "scripts": {
+    "start": "node ./src/main.js",
+    "local": "APIFY_LOCAL_STORAGE_DIR=./storage node ./src/main.js"
+  },
+  "dependencies": {
+    "apify": "^3.5.0",
+    "@crawlee/playwright": "^3.15.1",
+    "playwright": "^1.47.2",
+    "firebase-admin": "^12.6.0"
+  }
+}
