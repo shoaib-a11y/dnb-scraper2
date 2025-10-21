@@ -1,0 +1,75 @@
+{
+  "title": "DNB Scraper (Firebase optional)",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "title": "Start URLs",
+      "type": "array",
+      "editor": "requestListSources",
+      "description": "Company profile page URLs to scrape (public, no login)."
+    },
+    "maxRequestsPerCrawl": {
+      "title": "Max requests",
+      "type": "integer",
+      "default": 50
+    },
+    "maxConcurrency": {
+      "title": "Max concurrency",
+      "type": "integer",
+      "default": 5
+    },
+    "maxRequestsPerMinute": {
+      "title": "Throttle (requests/min)",
+      "type": "integer",
+      "default": 60
+    },
+    "useProxy": {
+      "title": "Use Apify Proxy",
+      "type": "boolean",
+      "default": false
+    },
+    "proxyGroups": {
+      "title": "Proxy groups",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Optional Apify proxy groups."
+    },
+    "selectors": {
+      "title": "CSS selectors",
+      "type": "object",
+      "description": "Customize selectors for company fields.",
+      "properties": {
+        "name": { "type": "string", "default": "h1.company-name" },
+        "address": { "type": "string", "default": "p.company-address" },
+        "phone": { "type": "string", "default": "a.company-phone" },
+        "website": { "type": "string", "default": "a.company-website" },
+        "industry": { "type": "string", "default": "span.company-industry" }
+      }
+    },
+    "firebaseEnabled": {
+      "title": "Enable Firebase sync",
+      "type": "boolean",
+      "default": false
+    },
+    "firebaseCollection": {
+      "title": "Firestore collection",
+      "type": "string",
+      "default": "companies"
+    },
+    "login": {
+      "title": "(Optional) Login flow — only use with permission",
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "loginUrl": { "type": "string" },
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "usernameSelector": { "type": "string", "default": "input[name=email]" },
+        "passwordSelector": { "type": "string", "default": "input[type=password]" },
+        "submitSelector": { "type": "string", "default": "button[type=submit]" }
+      }
+    }
+  },
+  "required": ["startUrls"]
+}
