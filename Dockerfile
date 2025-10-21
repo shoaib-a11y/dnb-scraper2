@@ -1,12 +1,10 @@
-# Use Apify’s official Node + Playwright image (best for Crawlee)
 FROM apify/actor-node-playwright:20
+WORKDIR /usr/src/app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Copy the rest of the source code
+# Copy the whole repo
 COPY . ./
 
-# Default command for Apify
+# Install deps: prefer ci when lockfile exists, else install
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
+
 CMD ["npm", "start"]
