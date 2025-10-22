@@ -11,14 +11,19 @@ const {
   ],
   maxRequestsPerCrawl = 200,
   maxConcurrency = 2,
-  maxRequestsPerMinute = 24,
-  useProxy = true,          // set to false if you don't have Apify proxy
-  proxyGroups = [],         // e.g., ["RESIDENTIAL"] if available to your account
+  maxRequestsPerMinute = 20,
+
+  // ✳️ Force US geo so you don't get redirected to U.S. Virgin Islands
+  useProxy = true,
+  proxyGroups = ['RESIDENTIAL'],    // if you have this; otherwise omit
+  proxyCountryCode = 'US',          // 👈 important
 } = input;
 
-// Proxy config
 const proxyConfiguration = useProxy
-  ? await Actor.createProxyConfiguration({ groups: proxyGroups })
+  ? await Actor.createProxyConfiguration({
+      groups: proxyGroups,
+      countryCode: proxyCountryCode,  // 👈 force US IP
+    })
   : new ProxyConfiguration({ useApifyProxy: false });
 
 const crawler = new PlaywrightCrawler({
@@ -28,12 +33,7 @@ const crawler = new PlaywrightCrawler({
   maxRequestsPerCrawl,
   proxyConfiguration,
 
-  // Sessions + cookies to reduce blocking
   useSessionPool: true,
-  sessionPoolOptions: {
-    maxPoolSize: 30,
-    sessionOptions: { maxUsageCount: 30 },
-  },
   persistCookiesPerSession: true,
 
   navigationTimeoutSecs: 45,
@@ -46,11 +46,8 @@ const crawler = new PlaywrightCrawler({
       'Accept-Language': 'en-US,en;q=0.9',
       'Upgrade-Insecure-Requests': '1',
     });
-    // small human-ish pause
-    await page.waitForTimeout(800 + Math.floor(Math.random() * 600));
   }],
 
-  // retire session on block
   errorHandler: async ({ request, error, session }) => {
     const msg = String(error?.message || '').toLowerCase();
     if (msg.includes('403') || msg.includes('block_page')) {
@@ -59,18 +56,35 @@ const crawler = new PlaywrightCrawler({
     }
   },
 
-  // === YOUR LIST SCRAPER ===
   async requestHandler({ request, page, enqueueLinks }) {
     await page.waitForLoadState('domcontentloaded');
 
-    // Heuristic for block pages (some sites serve 200 with block HTML)
+    // ✳️ Handle cookie banners so the list becomes visible
+    try {
+      const btn = await page.$('button:has-text("Accept") , button:has-text("I agree"), #onetrust-accept-btn-handler');
+      if (btn) await btn.click({ delay: 60 });
+    } catch {}
+
+    // ✳️ Nudge lazy loads
+    for (let i = 0; i < 3; i++) {
+      await page.mouse.wheel(0, 800);
+      await page.waitForTimeout(500);
+    }
+
+    // ✳️ Wait specifically for the list container or anchor to show
+    await Promise.race([
+      page.waitForSelector('#companyResults a.companyName', { timeout: 12000 }),
+      page.waitForSelector('#companyResults > div > div.col-md-6 > a', { timeout: 12000 }),
+    ]).catch(() => null);
+
+    // Heuristic for block pages
     const blocked = await page.evaluate(() => {
       const txt = (document.body?.innerText || '').toLowerCase();
       return /access denied|forbidden|blocked|verify you are a human|just a moment/.test(txt);
     });
     if (blocked) throw new Error('BLOCK_PAGE');
 
-    // Collect company anchors (name + href)
+    // ✅ Grab name + absolute URL
     const items = await page.$$eval(
       '#companyResults a.companyName, #companyResults > div > div.col-md-6 > a',
       (links) => {
@@ -84,6 +98,13 @@ const crawler = new PlaywrightCrawler({
       }
     );
 
+    // 🔎 Debug snapshot if nothing found
+    if (!items.length) {
+      const html = await page.content();
+      await Actor.setValue(`DEBUG_${Date.now()}`, { url: page.url(), htmlSnippet: html.slice(0, 5000) }, { contentType: 'application/json; charset=utf-8' });
+      log.warning(`No items found on ${page.url()} — saved DEBUG snapshot in KV store.`);
+    }
+
     for (const it of items) {
       await Actor.pushData({
         name: it.name || null,
@@ -94,7 +115,7 @@ const crawler = new PlaywrightCrawler({
     }
     log.info(`Found ${items.length} companies on ${request.url}`);
 
-    // Paginate via “Next” (div.next.font-16)
+    // ➡️ Paginate via “Next”
     const nextBtn = await page.$('div.next.font-16');
     if (nextBtn) {
       const prevUrl = page.url();
@@ -111,21 +132,15 @@ const crawler = new PlaywrightCrawler({
       }
     }
 
-    // polite jitter
     await page.waitForTimeout(400 + Math.floor(Math.random() * 600));
   },
 
   failedRequestHandler: async ({ request }) => {
-    await Actor.pushData({
-      error: 'FAILED',
-      url: request.url,
-      scrapedAt: new Date().toISOString(),
-    });
+    await Actor.pushData({ error: 'FAILED', url: request.url, scrapedAt: new Date().toISOString() });
   },
 });
 
-// Seed and run
+// seed
 const sources = (startUrls || []).map((x) => (x.url ? x : { url: x }));
 await crawler.run(sources);
-
 await Actor.exit();
